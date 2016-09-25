@@ -1,0 +1,91 @@
+var fs = require('fs');
+var request = require('request');
+
+var meetup = function() {
+  var key = "3355625642612dc66253267606f197e";
+  var url = "https://api.meetup.com";
+
+  var composeURL = function(root, object) {
+    return root + '?' + JSON.stringify(object).replace(/":"/g, '=').replace(/","/g, '&').slice(2, -2)
+  }
+
+  var get = function(params, callback, path) {
+    params.key = key;
+
+    request.get(composeURL(url + (path || '/2/open_events'), params), function(err, res, body) {
+      if ( err ) {
+        console.error(err);
+        return false;
+      }
+
+
+      callback(JSON.parse(body)['results']);
+    })
+  }
+
+  var post = function(details, callback, path) {
+    details.key = key;
+
+    request.post({
+      headers: { 'content-type' : 'application/x-www-form-urlencoded' },
+      url: url + (path || '/2/event'),
+      form: details
+    }, function(err, res, body) {
+      callback(body);
+    })
+  }
+
+  var parseEvent = function(mEvent) {
+    /*
+     * A simple function that converts JSON to
+     * string in a pretty way
+    **/
+    var time = mEvent['time'] || '';
+    var name = mEvent['name'] || '';
+    var desc = mEvent['desc'] || '';
+    var url = mEvent['url'] || '';
+
+    if ( mEvent['venue']) {
+      var city = mEvent['venue']['city'] || '';
+    }
+
+    if ( mEvent['group'] )
+      var group = mEvent['group']['name'] || '';
+
+    var parsed = '';
+
+    if ( name ) parsed += 'Name: ' + name + '\n';
+    if ( city ) parsed += 'City: ' + city + '\n';
+    if ( group ) parsed += 'Group: ' + group + '\n';
+    if ( time ) parsed += 'Time: ' + time + '\n';
+    return parsed;
+
+  };
+
+  var parseEvents = function(results) {
+    console.log('a');
+    for ( var i = 0; i < results.length; i++ ) {
+      console.log( parseEvent(results[i]) );
+    }
+  }
+ return {
+    get: get,
+    parseEvents: parseEvents,
+    post: post
+  }
+}
+
+meetup().get({
+  // More Info: http://www.meetup.com/meetup_api/docs/2/open_events/
+  topic: 'photo',
+  city: 'nyc'
+}, function(results) {
+  meetup().parseEvents(results);
+});
+
+
+meetup().get({
+  'group_urlname': 'foodie-programmers'
+}, function(group) {
+  console.log(group.id);
+}, '/2/groups');
