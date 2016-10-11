@@ -11,14 +11,11 @@ var meetup = function() {
 
   var get = function(params, callback, path) {
     params.key = key;
-
     request.get(composeURL(url + (path || '/2/open_events'), params), function(err, res, body) {
       if ( err ) {
         console.error(err);
         return false;
       }
-
-
       callback(JSON.parse(body)['results']);
     })
   }
@@ -59,7 +56,6 @@ var meetup = function() {
     if ( group ) parsed += 'Group: ' + group + '\n';
     if ( time ) parsed += 'Time: ' + time + '\n';
     return parsed;
-
   };
 
   var parseEvents = function(results) {
@@ -68,7 +64,7 @@ var meetup = function() {
       console.log( parseEvent(results[i]) );
     }
   }
- return {
+  return {
     get: get,
     parseEvents: parseEvents,
     post: post
@@ -82,7 +78,6 @@ meetup().get({
 }, function(results) {
   meetup().parseEvents(results);
 });
-
 
 meetup().get({
   'group_urlname': 'foodie-programmers'
