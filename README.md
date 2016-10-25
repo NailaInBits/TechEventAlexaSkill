@@ -13,4 +13,4 @@ I used the meetup.com API and built the Alexa skill in node.js
 #Links:
 Devpost: http://devpost.com/software/techevents
 
-My Social Canvas: http://futurelabs.engineering.nyu.edu/
+NYU Future Labs: http://futurelabs.engineering.nyu.edu/
